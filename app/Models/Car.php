@@ -6,11 +6,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Currancy extends Model
+class Car extends Model
 {
     use HasFactory, SoftDeletes;
 
-    public function country(){
-        return $this->belongsTo(Country::class, 'country_id');
+    public function user(){
+        return $this->belongsTo(User::class, 'carId');
+    }
+
+    public function bids(){
+        return $this->hasMany(Bid::class, 'carId');
     }
 }

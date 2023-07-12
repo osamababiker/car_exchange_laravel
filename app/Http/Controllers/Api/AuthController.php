@@ -13,14 +13,16 @@ use Illuminate\Support\Facades\Hash;
 class AuthController extends Controller
 {
 
+    /** Register a new user */
     public function register(Request $request){
         $rules = [
             'name' => 'required|string',
             'email' => 'required|email|unique:users',
             'phone' => 'required|unique:users',
-            'lat' => 'required',
+            'lat' => 'required', 
             'lng' => 'required',
             'password' => 'required|confirmed',
+            'notification_token' => 'required',
             'device_name' => 'required',
         ];
 
@@ -37,18 +39,16 @@ class AuthController extends Controller
         $user->phone = $request->phone;
         $user->lat = $request->lat;
         $user->lng = $request->lng;
+        $user->notification_token = $request->notification_token;
         $user->password = Hash::make($request->password);
         $user->verification_code = $digits;
         $user->save();
 
-        $token = $user->createToken($request->device_name)->plainTextToken;
-        return response()->json([
-            'user' => $user,
-            'token' => $token
-        ], 201);
+        return $user->createToken($request->device_name)->plainTextToken; 
     }
 
 
+    /** Log user in */
     public function login(Request $request){
         $request->validate([
             'email' => 'required',
@@ -58,7 +58,7 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
         if (! $user || ! Hash::check($request->password, $user->password)) {
             return response()->json('Unauthorized', 401);
-        }
+        } 
         $token = $user->createToken($request->device_name)->plainTextToken;
         return response()->json([
             'user' => $user,
@@ -66,32 +66,29 @@ class AuthController extends Controller
         ], 200);
     }
 
+    /** Update user info */
     public function update(Request $request){
         $rules = [
             'name' => "required|string",
-            'phone' => 'required',
-            'userId' => 'required'
+            'userId' => 'required',
+            'device_name' => 'required'
         ];
         $validator = Validator::make($request->all(),$rules);
-        if($validator->fails()){
+        if($validator->fails())
             return response()->json($validator->errors(), 400);
-        }
+        
         $user = User::find($request->userId);
         $user->name = $request->name;
-        $user->phone = $request->phone;
         $user->save();
-        $token = $user->createToken($request->device_name)->plainTextToken;
-        return response()->json([
-            'user' => $user,
-            'token' => $token
-        ], 200);
+        return $user->createToken($request->device_name)->plainTextToken;
     }
 
-
+    /** Update user password */
     public function updatePassword(Request $request){
         $rules = [
             'password' => "required",
-            'userId' => 'required'
+            'userId' => 'required',
+            'device_name' => 'required'
         ];
         $validator = Validator::make($request->all(),$rules);
         if($validator->fails())
@@ -99,15 +96,17 @@ class AuthController extends Controller
         $user = User::find($request->userId);
         $user->password = Hash::make($request->password);
         $user->save();
-        return response()->json($user, 200);
+        return $user->createToken($request->device_name)->plainTextToken;
     }
 
 
+    /** Return new user  */
     public function user(Request $request){
-        return auth()->user();
-    }
+        $user = User::where('id', auth()->user()->id)->first();
+        return $user; 
+    } 
 
-
+    /** Forget password  */
     public function ForgetPasswordForm(Request $request){
         $rules = [
             'email' => "required|email|exists:users",
@@ -136,7 +135,7 @@ class AuthController extends Controller
         return response()->json('Email sended successfully',200);
     }
 
-
+    /** Reset password */
     public function ResetPasswordForm(Request $request){
         $rules = [
             'email' => "required|email|exists:users",
@@ -165,10 +164,10 @@ class AuthController extends Controller
         return response()->json('Password updated successfully',200);
     }
 
-
+    /** Log user out */
     public function logout (Request $request) {
-        $token = $request->user()->token();
-        $token->revoke();
+        $user =  $request->user();
+        $user->tokens()->delete();
         return response('You have been successfully logged out!', 200);
     }
 

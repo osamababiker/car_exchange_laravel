@@ -6,11 +6,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Category extends Model
+class Bid extends Model
 {
     use HasFactory, SoftDeletes;
 
-    public function parent(){
-        return $this->belongsTo(Category::class, 'sub_of');
+    public function car(){
+        return $this->belongsTo(Car::class, 'carId');
+    }
+
+    public function user(){
+        return $this->belongsTo(User::class, 'userId');
     }
 }

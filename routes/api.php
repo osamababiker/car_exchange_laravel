@@ -24,15 +24,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [AuthController::class, 'user']);
 });
 
-Route::post('/sanctum/token', function (Request $request) {
-    $request->validate([
-        'email' => 'required',
-        'password' => 'required',
-        'device_name' => 'required',
-    ]);
-    $user = User::where('email', $request->email)->first();
-    if (! $user || ! Hash::check($request->password, $user->password)) {
-        return response()->json('Unauthorized', 401);
-    }
-    return $user->createToken($request->device_name)->plainTextToken;
-});
+
+/** to login user in */
+Route::post('/auth/login', [AuthController::class, 'login']);

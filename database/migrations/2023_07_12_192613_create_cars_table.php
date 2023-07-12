@@ -13,17 +13,19 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('categories', function (Blueprint $table) {
+        Schema::create('cars', function (Blueprint $table) {
             $table->id();
-            $table->string('en_name');  
-            $table->string('ar_name');
-            $table->string('image');
-            $table->unsignedBigInteger('sub_of')->nullable();
+            $table->string('name');
+            $table->string('model');
+            $table->double('openingPrice');
+            $table->string('picture');
+            $table->text('description'); 
 
-            $table->foreign('sub_of')
+            $table->unsignedBigInteger('userId');
+            $table->foreign('userId')
                 ->references('id')
-                ->on('categories')
-                ->onDelete('cascade');
+                ->on('users')
+                ->onDelete('cascade'); 
             $table->timestamps();
             $table->timestamp('deleted_at')->nullable();
         });
@@ -36,6 +38,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('cars');
     }
 };

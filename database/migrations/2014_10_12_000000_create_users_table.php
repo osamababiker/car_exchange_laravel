@@ -17,16 +17,9 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
-            $table->string('phone')->unique(); 
             $table->timestamp('email_verified_at')->nullable();
-            $table->integer('verification_code')->nullable();
             $table->integer('password_reset_code')->nullable();
-            $table->integer('phone_verified')->default(0);
             $table->string('password')->nullable();
-            $table->string('lat');
-            $table->string('lng');
-            $table->integer('is_admin')->default(0);
-            $table->integer('role')->default(0);
             $table->rememberToken();
             $table->timestamps();
         });
