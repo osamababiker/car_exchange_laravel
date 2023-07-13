@@ -11,7 +11,7 @@ class Car extends Model
     use HasFactory, SoftDeletes;
 
     public function user(){
-        return $this->belongsTo(User::class, 'carId');
+        return $this->belongsTo(User::class, 'userId');
     }
 
     public function bids(){
