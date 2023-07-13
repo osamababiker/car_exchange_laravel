@@ -14,10 +14,7 @@ class VerifyCsrfToken extends Middleware
     protected $except = [
         '/images/store',
         '/api/auth/login',
-        '/api/auth/register',
-        '/api/auth/user/update',
-        '/api/auth/forget-password',
-        '/api/auth/reset-password',
-        '/api/checkout/payment'
+        '/api/cars/store',
+        '/api/bids/store'
     ];
 }

@@ -4,9 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Validator, DB, Auth, Mail, App;
-use Carbon\Carbon;
-use Illuminate\Support\Str;
+use Validator;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
@@ -18,33 +16,25 @@ class AuthController extends Controller
         $rules = [
             'name' => 'required|string',
             'email' => 'required|email|unique:users',
-            'phone' => 'required|unique:users',
-            'lat' => 'required', 
-            'lng' => 'required',
             'password' => 'required|confirmed',
-            'notification_token' => 'required',
             'device_name' => 'required',
         ];
 
         $validator = Validator::make($request->all(), $rules);
         if($validator->fails())
             return response()->json($validator->errors(), 400);
-        
-
-        $digits = mt_rand(1000,9999);
 
         $user = new User();
         $user->name = $request->name;
         $user->email = $request->email;
-        $user->phone = $request->phone;
-        $user->lat = $request->lat;
-        $user->lng = $request->lng;
-        $user->notification_token = $request->notification_token;
         $user->password = Hash::make($request->password);
-        $user->verification_code = $digits;
         $user->save();
 
-        return $user->createToken($request->device_name)->plainTextToken; 
+        $token = $user->createToken($request->device_name)->plainTextToken;
+        return response()->json([
+            'user' => $user,
+            'token' => $token
+        ], 200);
     }
 
 
