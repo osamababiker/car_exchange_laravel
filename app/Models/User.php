@@ -20,15 +20,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name', 
-        'phone', 
         'email', 
-        'lat', '
-        lng', 
-        'role', 
-        'verification_code', 
-        'password_reset_code' , 
-        'phone_verified',
-        'is_admin'
     ];
 
     /**
@@ -51,6 +43,14 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function bids(){
+        return $this->hasMany(Bid::class, 'userId');
+    }
+
+    public function cars(){
+        return $this->hasMany(Car::class, 'userId');
+    }
 
     public function getAvatarAttribute(){
         return "https://www.gravatar.com/avatar/". md5(strtolower(trim($this->email)));

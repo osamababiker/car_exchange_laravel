@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Car;
 use Validator;
+use App\Models\Car;
 
 class CarsController extends Controller
 {
@@ -15,10 +15,9 @@ class CarsController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(){
-        $cars = Car::with('user')->with('bids')->get();
-        return response()->json($cars);
+        $cars = Car::with('user')->with('bids')->withMax('bids','price')->get();
+        return response()->json($cars, 200);
     }
- 
 
     /**
      * Store a newly created resource in storage.
@@ -32,8 +31,8 @@ class CarsController extends Controller
             'name' => 'required|string',
             'model' => 'required|string',
             'price' => 'required',
-            'description' => 'required',
-            'picture' => 'required|file'
+            'description' => 'required|string',
+            'picture' => 'required|file',
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -49,11 +48,12 @@ class CarsController extends Controller
         $car = new Car();
         $car->userId = $request->userId;
         $car->name = $request->name;
-        $car->openingPrice = $request->price;
         $car->model = $request->model;
+        $car->openingPrice = $request->price;
         $car->description = $request->description;
         $car->picture = $uploadedFile;
         $car->save();
+
         return response()->json($car, 201);
     }
 
@@ -63,11 +63,10 @@ class CarsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
-    {
-        //
+    public function show($id){
+        $car = Car::where('id',$id)->with('user')->with('bids')->first();
+        return response()->json($car, 200);
     }
-
 
     /**
      * Update the specified resource in storage.
