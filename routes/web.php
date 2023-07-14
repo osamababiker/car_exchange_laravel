@@ -22,19 +22,9 @@ Route::get('/clear/cache', function () {
     dd("Cache is cleared");
 });
 
-Route::get('/login',[AuthController::class, 'showLogin'])->name('login')->middleware('guest');
-Route::get('/register',[AuthController::class, 'showRegister'])->name('register')->middleware('guest');
-Route::post('/login',[AuthController::class, 'login']);
-Route::post('/register',[AuthController::class, 'register']);
-Route::middleware('auth')->group(function () {
-    Route::post('/logout',[AuthController::class, 'logout'])->name('logout');
-});
-
-
 
 Route::group(['middleware' => ['auth', 'admin']], function() {
     Route::get('/', [HomeController::class, 'index']);
-
 });
 
 
